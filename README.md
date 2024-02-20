@@ -38,11 +38,28 @@ The client secret given to you by the API provider
 ### Scope
 The scope of access you are requesting, which may include multiple space-separated values.
 
-| Scope                                                   | Description                                                                               |
-|---------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| https://www.googleapis.com/auth/meetings.space.readonly | Allow apps to read metadata about any meeting space the user has access to.               |
-| https://www.googleapis.com/auth/meetings.space.created  | Allow apps to create, modify, and read metadata about meeting spaces created by your app. |
-| https://www.googleapis.com/auth/contacts.readonly       | Allow apps to download recording and transcript files from Google Drive API.              |
+<table class="table" style="margin-top: 10px">
+    <thead>
+    <tr>
+        <th>Scope</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>https://www.googleapis.com/auth/meetings.space.readonly</td>
+        <td>Allow apps to read metadata about any meeting space the user has access to.</td>
+    </tr>
+    <tr>
+        <td>https://www.googleapis.com/auth/meetings.space.created</td>
+        <td>Allow apps to create, modify, and read metadata about meeting spaces created by your app.</td>
+    </tr>
+    <tr>
+        <td>https://www.googleapis.com/auth/contacts.readonly</td>
+        <td>Allow apps to download recording and transcript files from Google Drive API.</td>
+    </tr>
+    </tbody>
+</table>
 
 ### State
 An opaque value to prevent cross-site request forgery.
