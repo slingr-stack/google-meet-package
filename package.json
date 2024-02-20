@@ -1,0 +1,96 @@
+{
+        "name": "googlemeet",
+    "label": "Google Meet Package",
+    "dependencies": [
+        {
+            "type": "service",
+            "name": "http",
+            "version": "v1.3.7",
+            "instanceId": "shared"
+        },
+        {
+            "type": "package",
+            "name": "oauth",
+            "version": "v1.0.24"
+        }
+    ],
+    "configurationBuilder": "/configurationBuilder.js",
+    "configuration": [
+        {
+            "label": "Client Id",
+            "name": "clientId",
+            "description": "The ID for your client application registered with the API provider.",
+            "required": "true",
+            "type": "text"
+        },
+        {
+            "label": "Client Secret",
+            "name": "clientSecret",
+            "description": "The client secret given to you by the API provider",
+            "required": "true",
+            "type": "text"
+        },
+        {
+            "label": "Scope",
+            "name": "scope",
+            "description": "The scope of access you are requesting, which may include multiple space-separated values.",
+            "required": "true",
+            "type": "text"
+        },
+        {
+            "label": "State",
+            "name": "state",
+            "description": "An opaque value to prevent cross-site request forgery.",
+            "type": "text"
+        },
+        {
+            "name": "oauthCallback",
+            "label": "OAuth callback",
+            "description": "The OAuth callback to configure in your Google Meet App",
+            "type": "label",
+            "value": "config.AUTH_CALLBACK_URL+'/authCallback'"
+        },
+        {
+            "name": "webhooksUrl",
+            "label": "Webhooks URL",
+            "description": "The URL to configure in webhooks of your Google Meet App",
+            "type": "label",
+            "value": "config.WEBHOOK_URL"
+        },
+        {
+            "name": "GOOGLE_MEET_API_BASE_URL",
+            "label": "Google Meet Api Url",
+            "type": "label",
+            "value": "https://meet.googleapis.com/v2"
+        }
+    ],
+    "events": [
+        {
+            "label": "Webhook",
+            "name": "webhook",
+            "description": "Happens when Google Meet sends a webhook to the package."
+        },
+        {
+            "label": "User connected to Google Meet",
+            "name": "userConnected",
+            "description": "Happens when a user successfully connects to Google Meet."
+        }
+    ],
+    "metadata": [
+        {
+            "type": "script",
+            "namespace": "api",
+            "path": "/scripts/api.js"
+        },
+        {
+            "type": "listener",
+            "namespace": "listeners",
+            "path": "/listeners/listeners.js"
+        },
+        {
+            "type": "flowStep",
+            "namespace": "apiCallGoogleContacts",
+            "path": "/flowSteps/apiCallGoogleContacts"
+        }
+    ]
+}
