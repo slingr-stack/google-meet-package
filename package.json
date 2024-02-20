@@ -89,8 +89,8 @@
         },
         {
             "type": "flowStep",
-            "namespace": "apiCallGoogleContacts",
-            "path": "/flowSteps/apiCallGoogleContacts"
+            "namespace": "apiCallGoogleMeet",
+            "path": "/flowSteps/apiCallGoogleMeet"
         }
     ]
 }
