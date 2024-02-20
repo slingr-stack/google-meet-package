@@ -9,7 +9,7 @@
     <tbody>
     <tr>
         <td>Google Meet package</td>
-        <td>January 22, 2024</td>
+        <td>February 20, 2024</td>
         <td>Detailed description of the API of the Google Meet package.</td>
     </tr>
     </tbody>
