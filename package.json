@@ -84,13 +84,8 @@
         },
         {
             "type": "listener",
-            "namespace": "listeners",
-            "path": "/listeners/listeners.js"
-        },
-        {
-            "type": "flowStep",
-            "namespace": "apiCallGoogleMeet",
-            "path": "/flowSteps/apiCallGoogleMeet"
+            "namespace": "webhook",
+            "path": "/listeners/webhook.js"
         }
     ]
 }
