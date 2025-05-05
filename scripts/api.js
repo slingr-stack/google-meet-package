@@ -25,8 +25,16 @@ function handleRequestWithRetry(requestFn, options, callbackData, callbacks) {
         return requestFn(options, callbackData, callbacks);
     } catch (error) {
         sys.logs.info("[googlemeet] Handling request "+JSON.stringify(error));
-        dependencies.oauth.functions.refreshToken('googlemeet:refreshToken');
-        return requestFn(setAuthorization(options), callbackData, callbacks);
+        if (error.additionalInfo.status === 401) {
+            if (config.get("authenticationMethod") === 'oauth') {
+                dependencies.oauth.functions.refreshToken('googledrive:refreshToken');
+            } else { 
+                getAccessTokenForAccount(); // this will attempt to get a new access_token in case it has expired
+            }    
+            return requestFn(setAuthorization(options), callbackData, callbacks);
+        } else {
+            throw error; 
+        } 
     }
 }
 
