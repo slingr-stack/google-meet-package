@@ -1,65 +1,96 @@
 {
-        "name": "googlemeet",
-    "label": "Google Meet Package",
+    "name": "googlemeet",
+    "label": "Google Meet",
     "dependencies": [
         {
             "type": "service",
             "name": "http",
-            "version": "v1.3.7",
-            "instanceId": "shared"
+            "version": "v1.8.0"
         },
         {
             "type": "package",
             "name": "oauth",
-            "version": "v1.0.24"
+            "version": "v1.0.34"
         }
     ],
     "configurationBuilder": "/configurationBuilder.js",
     "configuration": [
         {
+            "name": "authenticationMethod",
+            "label": "Authentication Method",
+            "required": true,
+            "defaultValue": "oAuth2",
+            "type": "buttonsGroup",
+            "typeOptions": {
+                "allowCustom": false,
+                "possibleValues": [
+                    {
+                        "label": "Service Account",
+                        "name": "serviceAccount"
+                    },
+                    {
+                        "label": "OAuth 2.0",
+                        "name": "oAuth2"
+                    }
+                ]
+            }
+        },
+        {
+            "name": "serviceAccountEmail",
+            "label": "Service Account Email",
+            "description": "The email from service account created",
+            "type": "text",
+            "required": "config.authenticationMethod == 'serviceAccount'",
+            "visibility": "config.authenticationMethod == 'serviceAccount'"
+        },
+        {
+            "name": "privateKey",
+            "label": "Private Key",
+            "description": "The private key associated to the service account",
+            "type": "password",
+            "required": "config.authenticationMethod == 'serviceAccount'",
+            "visibility": "config.authenticationMethod == 'serviceAccount'"
+        },
+        {
             "label": "Client Id",
             "name": "clientId",
             "description": "The ID for your client application registered with the API provider.",
             "required": "true",
-            "type": "text"
+            "type": "text",
+            "visibility": "config.authenticationMethod == 'oAuth2'"
         },
         {
             "label": "Client Secret",
             "name": "clientSecret",
             "description": "The client secret given to you by the API provider",
-            "required": "true",
-            "type": "text"
+            "required": "config.authenticationMethod == 'oAuth2'",
+            "type": "text",
+            "visibility": "config.authenticationMethod == 'oAuth2'"
         },
         {
-            "label": "Scope",
-            "name": "scope",
+            "label": "Auth Scopes",
+            "name": "authScopes",
             "description": "The scope of access you are requesting, which may include multiple space-separated values.",
             "required": "true",
             "type": "text"
         },
         {
-            "label": "State",
-            "name": "state",
-            "description": "An opaque value to prevent cross-site request forgery.",
-            "type": "text"
-        },
-        {
-            "name": "oauthCallback",
-            "label": "OAuth callback",
-            "description": "The OAuth callback to configure in your Google Meet App",
-            "type": "label",
-            "value": "config.AUTH_CALLBACK_URL+'/authCallback'"
-        },
-        {
             "name": "webhooksUrl",
             "label": "Webhooks URL",
-            "description": "The URL to configure in webhooks of your Google Meet App",
+            "description": "The URL to configure in webhooks of your Google Workspace App",
             "type": "label",
             "value": "config.WEBHOOK_URL"
         },
         {
-            "name": "GOOGLE_MEET_API_BASE_URL",
-            "label": "Google Meet Api Url",
+            "name": "oauthCallback",
+            "label": "OAuth callback",
+            "description": "The OAuth callback to configure in your Google Workspace App",
+            "type": "label",
+            "value":  "config.AUTH_CALLBACK_URL+'/authCallback'"
+        },
+        {
+            "name": "GOOGLEMEET_API_BASE_URL",
+            "label": "Google Meet API URL",
             "type": "label",
             "value": "https://meet.googleapis.com/v2"
         }
@@ -69,18 +100,17 @@
             "label": "Webhook",
             "name": "webhook",
             "description": "Happens when Google Meet sends a webhook to the package."
-        },
-        {
-            "label": "User connected to Google Meet",
-            "name": "userConnected",
-            "description": "Happens when a user successfully connects to Google Meet."
-        }
-    ],
+        }],
     "metadata": [
         {
             "type": "script",
             "namespace": "api",
             "path": "/scripts/api.js"
+        },
+        {
+            "type": "script",
+            "namespace": "utils",
+            "path": "/scripts/utils.js"
         },
         {
             "type": "listener",

@@ -2,7 +2,7 @@
  Listeners
  ****************************************************/
 
-listeners.defaultWebhookGoogleMeet = {
+ listeners.defaultWebhookGoogleMeet = {
     label: 'Catch HTTP Google Meet events',
     type: 'service',
     options: {
@@ -13,17 +13,7 @@ listeners.defaultWebhookGoogleMeet = {
         }
     },
     callback: function(event) {
-        sys.logs.info('Received Google Meet webhook. Processing and triggering a package event.');
-        var body = JSON.stringify(event.data.body);
-        var params = event.data.parameters;
-        if(true) {
-            sys.logs.info('Valid webhook received. Triggering event.');
-            sys.events.triggerEvent('googlemeet:webhook', {
-                body: body,
-                params: params
-            });
-            return "ok";
-        }
-        else throw new Error("Invalid webhook");
+        sys.logs.info('[googlemeet] Received Google Meet webhook. Processing and triggering a package event.', event);
+        sys.events.triggerEvent('googlemeet:webhook', event.data);
     }
 };

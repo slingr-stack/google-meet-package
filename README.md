@@ -1,283 +1,162 @@
-<table class="table" style="margin-top: 10px">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Last Updated</th>
-        <th>Summary</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>Google Meet package</td>
-        <td>February 20, 2024</td>
-        <td>Detailed description of the API of the Google Meet package.</td>
-    </tr>
-    </tbody>
-</table>
-
-
 # Overview
+Repo: [https://github.com/slingr-stack/google-meet-package](https://github.com/slingr-stack/google-meet-package)
 
-The Google Meet Package lets you create and manage meetings for Google Meet and offers entry points to your users directly from your app.
+This [package](https://platform-docs.slingr.io/dev-reference/data-model-and-logic/packages/) allows direct access to the [Google Meet API](https://developers.google.com/workspace/meet/api/reference/rest/v2),
+through a Client ID OAuth 2.0 account; however, it provides shortcuts and helpers for most common use cases.
+Also, you can refer to the [Google Meet Documentation](https://developers.google.com/workspace/meet/api/reference/rest/v2) for more information.
+Some features available in this endpoint are:
 
-With the Meet Package, you can do the following:
-
-* Create a meeting space.
-* Get a meeting space or conference by resource name.
-* Get a list of participants and participant sessions.
-* Get meeting artifacts (recordings, transcripts, and transcript entries).
+- Authentication and authorization
+- Direct access to the Google Meet API
+- Listener that catch incoming webhooks from Google Meet
 
 ## Configuration
 
-### Client Id
-The ID for your client application registered with the API provider.
+To use the Google Meet package,
+first you must create an app in the [Google Developer Console](https://console.developers.google.com)
+then create a Google Cloud project for your Google Meet app, then if you plan to use Service Account authentication method, follow these instructions:
 
-### Client Secret
-The client secret given to you by the API provider
+- Enable the Admin SDK API in your Google Cloud project.
+- Create a service account and credentials and delegate domain-wide authority to it (assign ONLY the necessary scopes to your service - account) [Click here for instructions](https://cloud.google.com/iam/docs/manage-access-service-accounts?hl=es-419).
+- Download the JSON file with the service account credentials to get the service account private key.
 
-### Scope
-The scope of access you are requesting, which may include multiple space-separated values.
+Otherwise, if you plan to use OAuth 2.0 authentication method:
 
-<table class="table" style="margin-top: 10px">
-    <thead>
-    <tr>
-        <th>Scope</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>https://www.googleapis.com/auth/meetings.space.readonly</td>
-        <td>Allow apps to read metadata about any meeting space the user has access to.</td>
-    </tr>
-    <tr>
-        <td>https://www.googleapis.com/auth/meetings.space.created</td>
-        <td>Allow apps to create, modify, and read metadata about meeting spaces created by your app.</td>
-    </tr>
-    <tr>
-        <td>https://www.googleapis.com/auth/contacts.readonly</td>
-        <td>Allow apps to download recording and transcript files from Google Drive API.</td>
-    </tr>
-    </tbody>
-</table>
+- Enable the Meet API in your Google Cloud project.
+- Create a Client ID OAuth 2.0 account.
+- Copy the Client ID and Client Secret of the package.
 
-### State
-An opaque value to prevent cross-site request forgery.
+### Scopes
 
+Note that the client must have access to the meet resources. If you try to access to a resource that the user does not own
+the request will result in a 404 or 403 unauthorized error.
+
+To successfully use the Google Meet package through a Service Account, please note the following requirements:
+
+### Domain-Wide Delegation (If you want to access all users' meets within your organization):
+   If you wish to allow the Service Account to access the meets of all users within your domain (Google Workspace/GSuite), you must configure Domain-Wide Delegation for the Service Account. This allows the Service Account to act on behalf of users in your organization.
+
+#### Steps to Set Up Domain-Wide Delegation:
+
+Enable Domain-Wide Delegation for the Service Account:
+
+1. Go to the Google Cloud Console.
+Navigate to IAM & Admin > Service Accounts.
+Select your Service Account and click on it.
+Under the Service Account details, enable Domain-Wide Delegation.
+Note the Client ID of the Service Account.
+Configure Delegation in Google Admin Console:
+
+2. Go to the Google Admin Console (you need to be a super administrator).
+Navigate to Security > API Controls.
+Under Domain-wide delegation, click Manage Domain Wide Delegation.
+Add the Client ID of your Service Account.
+Assign the necessary scopes (permissions) that you want the Service Account to access.
+
+## Configuration Parameters
+If you have selected OAuth 2.0 authorization method, these are the field names to use the parameters with dynamic configuration.
+
+Name (Dynamic Config param name) - Type
+* Client Id (clientId) - Text
+* Client Secret (clientSecret) - Text
+
+#### Authentication Method
+Allows to choose between Account Service and OAuth 2.0 authorization methods.
+
+**Name**: `authenticationMethod`
+**Type**: buttonsGroup
+**Mandatory**: true
+
+#### Service Account Email
+The email created for the service account, it shows up when Service Account authorization method is enabled.
+
+**Name**: `serviceAccountEmail`
+**Type**: text
+**Mandatory**: true
+
+
+
+#### Private Key
+The private key associated to the service account, it shows up when Service Account authorization method is enabled.
+
+**Name**: `privateKey`
+**Type**: password
+**Mandatory**: true
+
+#### Client ID
+The ID for your client application registered with the API provider, it shows up when OAuth 2.0 authorization method is enabled.
+
+**Name**: `clientId`
+**Type**: text
+**Mandatory**: true
+
+#### Client Secret
+The client secret given to you by the API provider, it shows up when OAuth 2.0 authorization method is enabled.
+
+**Name**: `clientSecret`
+**Type**: password
+**Mandatory**: true
+
+#### OAuth Callback
+The OAuth callback to configure in your Google Meet App. it shows up when OAuth 2.0 authorization method is enabled.
+
+**Name**: `oauthCallback`
+**Type**: label
+
+#### Webhooks URL
+The URL to configure in webhooks of your Google Meet App.
+(Take a look at the [Google Meet documentation](https://developers.google.com/workspace/meet/api/reference/rest/v2).)
+
+**Name**: `webhooksUrl`
+**Type**: label
+
+#### Google Meet API URL
+The URL of the Google Meet API where the requests are performed.
+
+**Name**: `GOOGLEMEET_API_BASE_URL`
+**Type**: label
+
+### Storage Value And Offline Mode
+
+By default, the `Service Account` authorization method is used. When using this method, you can directly call the following method to retrieve the access token, without requiring any additional actions:
+
+`pkg.googlemeet.api.getAccessToken();`
+
+This will return the access token, which will be securely stored in the application's storage and associated with a user by their ID.
+
+If you have enabled the `OAuth 2.0` authorization method, the same method is used. The difference is that the Google Meet package includes the `&access_type=offline` parameter, which allows the application to request a refresh token. This happens when calling the UI service (which should run during runtime, for example, by invoking the method within an action) to log in to the application.
+
+The Google service will return an object containing both the access token and the refresh token. Each token will be stored in the app's storage (accessible via the Monitor), where you can view them encrypted and associated with the user by ID.
 
 # Javascript API
 
-The Javascript API of the Google Meet package has two pieces:
-
-- **HTTP requests**
-- **Flow steps**
-
 ## HTTP requests
-You can make `GET`,`PUT`,`PATCH`,`DELETE` requests to the [Google Meet API](https://developers.google.com/meet/api/reference/rest/v2) like this:
+
+You can make `DELETE`,`GET`,`POST`,`PATCH`,`PUT` requests to the [googlemeet API](https://developers.google.com/workspace/meet/api/reference/rest/v2) like this:
+
 ```javascript
-var response = pkg.googlemeet.api.get('/{name=conferenceRecords/*/recordings/*}')
-var response = pkg.googlemeet.api.get('/{parent=conferenceRecords/*}/recordings')
-var response = pkg.googlemeet.api.post('/spaces', {
-    "name": string,
-    "meetingUri": string,
-    "meetingCode": string,
-    "config": {
-        object (SpaceConfig)
-    },
-    "activeConference": {
-        object (ActiveConference)
-    }
-})
-var response = pkg.googlemeet.api.post('/{name=spaces/*}:endActiveConference')
-var response = pkg.googlemeet.api.patch('/{space.name=spaces/*}',{
-    "name": string,
-    "meetingUri": string,
-    "meetingCode": string,
-    "config": {
-        object (SpaceConfig)
-    },
-    "activeConference": {
-        object (ActiveConference)
-    }
-})
+var response = pkg.googlemeet.api.get(`/{parent=conferenceRecords/conferenceRecords`);
 ```
 
-Please take a look at the documentation of the [HTTP service](https://github.com/slingr-stack/http-service?tab=readme-ov-file#overview)
-for more information about generic requests.
+Please take a look at the documentation of the [HTTP service](https://github.com/slingr-stack/http-service) for more information about generic requests.
 
-## Flow Step
+## Events
+### Webhook
 
-As an alternative option to using scripts, you can make use of Flows and Flow Steps specifically created for the package:
-<details>
-    <summary>Click here to see the Flow Steps</summary>
+Incoming webhook events are automatically captured by the default listener named `Catch HTTP google meet events`, which can be found below the `Scripts` section. Alternatively, you have the option to create a new package listener. For more information, please refer to the [Listeners Documentation](https://platform-docs.slingr.io/dev-reference/data-model-and-logic/listeners/). Please take a look at the Google Meet documentation of the [Webhooks](https://developers.google.com/workspace/events/guides/events-meet) for more information.
 
-<br>
-
-### Generic Flow Step
-
-Generic flow step for full use of the entire package and its services.
-
-<h3>Inputs</h3>
-
-<table>
-    <thead>
-    <tr>
-        <th>Label</th>
-        <th>Type</th>
-        <th>Required</th>
-        <th>Default</th>
-        <th>Visibility</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>URL (Method)</td>
-        <td>choice</td>
-        <td>yes</td>
-        <td> - </td>
-        <td>Always</td>
-        <td>
-            This is the http method to be used against the package. <br>
-            Possible values are: <br>
-            <i><strong>GET,PUT,PATCH,DELETE</strong></i>
-        </td>
-    </tr>
-    <tr>
-        <td>URL (Path)</td>
-        <td>choice</td>
-        <td>yes</td>
-        <td> - </td>
-        <td>Always</td>
-        <td>
-            The url to which this package will send the request. This is the exact service to which the http request will be made. <br>
-            Possible values are: <br>
-            <i><strong>/testPath<br>/path3<br>/path1/{testPath}<br>/path2?param2=' + httpOptions.query.param2 + '&param3=' + httpOptions.query.param3 + '<br>/path4<br></strong></i>
-        </td>
-    </tr>
-    <tr>
-        <td>Headers</td>
-        <td>keyValue</td>
-        <td>no</td>
-        <td> - </td>
-        <td>Always</td>
-        <td>
-            Used when you want to have a custom http header for the request.
-        </td>
-    </tr>
-    <tr>
-        <td>Query Params</td>
-        <td>keyValue</td>
-        <td>no</td>
-        <td> - </td>
-        <td>Always</td>
-        <td>
-            Used when you want to have a custom query params for the http call.
-        </td>
-    </tr>
-    <tr>
-        <td>Body</td>
-        <td>json</td>
-        <td>no</td>
-        <td> - </td>
-        <td>Always</td>
-        <td>
-            A payload of data can be sent to the server in the body of the request.
-        </td>
-    </tr>
-    <tr>
-        <td>Override Settings</td>
-        <td>boolean</td>
-        <td>no</td>
-        <td> false </td>
-        <td>Always</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Follow Redirect</td>
-        <td>boolean</td>
-        <td>no</td>
-        <td> false </td>
-        <td> overrideSettings </td>
-        <td>It Indicates that the resource has to be downloaded into a file instead of returning it in the response.</td>
-    </tr>
-    <tr>
-        <td>Download</td>
-        <td>boolean</td>
-        <td>no</td>
-        <td> false </td>
-        <td> overrideSettings </td>
-        <td>If true, the method won't return until the file has been downloaded, and it will return all the information of the file.</td>
-    </tr>
-    <tr>
-        <td>File name</td>
-        <td>text</td>
-        <td>no</td>
-        <td></td>
-        <td> overrideSettings </td>
-        <td>If provided, the file will be stored with this name. If empty, the file name will be calculated from the URL.</td>
-    </tr>
-    <tr>
-        <td>Full response</td>
-        <td> boolean </td>
-        <td>no</td>
-        <td> false </td>
-        <td> overrideSettings </td>
-        <td>Includes extended information about response</td>
-    </tr>
-    <tr>
-        <td>Connection Timeout</td>
-        <td> number </td>
-        <td>no</td>
-        <td> 5000 </td>
-        <td> overrideSettings </td>
-        <td>Connect a timeout interval in milliseconds (0 = infinity).</td>
-    </tr>
-    <tr>
-        <td>Read Timeout</td>
-        <td> number </td>
-        <td>no</td>
-        <td> 60000 </td>
-        <td> overrideSettings </td>
-        <td>Read a timeout interval in milliseconds (0 = infinity).</td>
-    </tr>
-    </tbody>
-</table>
-
-<h3>Outputs</h3>
-
-<table>
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>response</td>
-        <td>object</td>
-        <td>
-            Object resulting from the response to the package call.
-        </td>
-    </tr>
-    </tbody>
-</table>
-
-
-</details>
+There are no events for this endpoint.
 
 ## Dependencies
-* HTTP Service (v1.3.7)
-* Oauth Package (v1.0.24)
+* HTTP Service
+* OAuth Package
 
-## About SLINGR
+# About Slingr
 
-SLINGR is a low-code rapid application development platform that accelerates development, with robust architecture for integrations and executing custom workflows and automation.
+Slingr is a low-code rapid application development platform that accelerates development, with robust architecture for integrations and executing custom workflows and automation.
 
 [More info about SLINGR](https://slingr.io)
 
-## License
+# License
 
 This package is licensed under the Apache License 2.0. See the `LICENSE` file for more details.
