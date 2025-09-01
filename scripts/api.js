@@ -204,6 +204,7 @@ let GoogleMeet = function (options) {
  ****************************************************/
 
 function setApiUri(options) {
+    if (options.url) return options;
     let API_URL = config.get("GOOGLEMEET_API_BASE_URL");
     let url = options.path || "";
     options.url = API_URL + url;
