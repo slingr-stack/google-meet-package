@@ -71,7 +71,7 @@ exports.removeAccessToken = function () {
         sys.logs.info("[googlemeet] Removing access token from oauth");
         return dependencies.oauth.functions.disconnectUser("googlemeet:disconnectUser");
     } else {
-        sys.storage.remove('installationInfo-googlemeet---'+  sys.context.getCurrentUserRecord().id());
+        sys.storage.remove('installationInfo-googlemeet-User-'+  sys.context.getCurrentUserRecord().id());
     }
 }
 
@@ -239,7 +239,7 @@ function setAuthorization(options) {
 
 function getAccessTokenForAccount() {
     sys.logs.info('[googlemeet] Getting access token for account: '+ sys.context.getCurrentUserRecord().id());
-    let installationJson = sys.storage.get('installationInfo-googlemeet---'+  sys.context.getCurrentUserRecord().id()) || {id: null};
+    let installationJson = sys.storage.get('installationInfo-googlemeet-User-'+  sys.context.getCurrentUserRecord().id()) || {id: null};
     let token = installationJson.token || null;
     let expiration = installationJson.expiration || 0;
     if (!token || expiration < new Date()) {
@@ -260,7 +260,7 @@ function getAccessTokenForAccount() {
         expiration = expires_at * 1000 +  + new Date().getTime();
         installationJson = mergeJSON(installationJson, {"token": token, "expiration": expiration});
         sys.logs.info('[googlemeet] Saving new token for account: ' + sys.context.getCurrentUserRecord().id());
-        sys.storage.put('installationInfo-googlemeet---'+  sys.context.getCurrentUserRecord().id(), installationJson);
+        sys.storage.put('installationInfo-googlemeet-User-'+  sys.context.getCurrentUserRecord().id(), installationJson);
     }
     return token;
 }
